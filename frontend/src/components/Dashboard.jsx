@@ -14,6 +14,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selectedDevice, setSelectedDevice] = useState(null);
+  const [deviceHistory, setDeviceHistory] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedGraph, setSelectedGraph] = useState('net');
   const token = localStorage.getItem('token');
@@ -57,15 +58,21 @@ const Dashboard = () => {
     try {
       const res = await api.post('/data/crop-data');
       alert(`Deleted ${res.data.deletedCount} old data entries!`);
-      await fetchData(); // Refresh data after cropping
+      await fetchData();
     } catch (err) {
       setError('Failed to crop data. Please try again.');
     }
   };
 
   const handleShowHistory = async (device) => {
-    setSelectedDevice(device);
-    setShowModal(true);
+    try {
+      setSelectedDevice(device);
+      const historyRes = await api.get(`/data/history?deviceId=${device._id}&hours=24`);
+      setDeviceHistory(historyRes.data);
+      setShowModal(true);
+    } catch (err) {
+      setError('Failed to fetch device history');
+    }
   };
 
   const calculateTotals = () => {
@@ -154,7 +161,38 @@ const Dashboard = () => {
     };
   };
 
+  const processDeviceChartData = (deviceData) => {
+    const timeBuckets = deviceData.reduce((acc, data) => {
+      const time = new Date(data.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      
+      if (!acc[time]) {
+        acc[time] = 0;
+      }
+
+      acc[time] = selectedDevice?.type === 'solar' 
+        ? -Math.abs(data.powerConsumption)
+        : Math.abs(data.powerConsumption);
+
+      return acc;
+    }, {});
+
+    return {
+      labels: Object.keys(timeBuckets),
+      datasets: [{
+        label: selectedDevice?.type === 'solar' ? 'Power Production (W)' : 'Power Consumption (W)',
+        data: Object.values(timeBuckets),
+        borderColor: selectedDevice?.type === 'solar' ? '#28a745' : '#dc3545',
+        backgroundColor: selectedDevice?.type === 'solar' 
+          ? 'rgba(40, 167, 69, 0.1)' 
+          : 'rgba(220, 53, 69, 0.1)',
+        tension: 0.1,
+        fill: false
+      }]
+    };
+  };
+
   const chartData = processChartData();
+  const deviceChartData = processDeviceChartData(deviceHistory);
 
   const chartOptions = {
     scales: {
@@ -208,7 +246,7 @@ const Dashboard = () => {
         <h4>System Summary</h4>
         <p className='fs-5'>Solar Production: <b>{totals.solarProduction.toFixed(1)}W</b></p>
         <p className='fs-5'>Total Consumption: <b>{totals.totalConsumption.toFixed(1)}W</b></p>
-        <p className='fs-5'>Net Power: <b>{totals.netPower.toFixed(1)}w</b></p>
+        <p className='fs-5'>Net Power: <b>{totals.netPower.toFixed(1)}W</b></p>
       </div>
 
       <div className="d-flex justify-content-between align-items-center mb-3">
@@ -251,16 +289,29 @@ const Dashboard = () => {
           </Col>
         ))}
       </Row>
-
-        <br/><br />
-
-      <Modal show={showModal} onHide={() => setShowModal(false)}>
+<br />
+      <Modal show={showModal} onHide={() => setShowModal(false)} size="lg">
         <Modal.Header closeButton>
           <Modal.Title>{selectedDevice?.name} History</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {selectedDevice && (
-            <Line data={chartData} />
+            <>
+              <Line 
+                data={deviceChartData} 
+                options={chartOptions} 
+              />
+              <div className="mt-3">
+                <h5>Recent Statistics</h5>
+                <p>Average Power: {(
+                  deviceHistory.reduce((sum, data) => sum + Math.abs(data.powerConsumption), 0) /
+                  (deviceHistory.length || 1)
+                ).toFixed(1)}W</p>
+                <p>Total Energy: {(
+                  deviceHistory.reduce((sum, data) => sum + (data.energy || 0), 0)
+                ).toFixed(1)}kWh</p>
+              </div>
+            </>
           )}
         </Modal.Body>
       </Modal>
