@@ -206,9 +206,9 @@ const Dashboard = () => {
 
       <div className="mt-3">
         <h4>System Summary</h4>
-        <p>Solar Production: {totals.solarProduction.toFixed(1)}W</p>
-        <p>Total Consumption: {totals.totalConsumption.toFixed(1)}W</p>
-        <p>Net Power: {totals.netPower.toFixed(1)}W</p>
+        <p className='fs-5'>Solar Production: <b>{totals.solarProduction.toFixed(1)}W</b></p>
+        <p className='fs-5'>Total Consumption: <b>{totals.totalConsumption.toFixed(1)}W</b></p>
+        <p className='fs-5'>Net Power: <b>{totals.netPower.toFixed(1)}w</b></p>
       </div>
 
       <div className="d-flex justify-content-between align-items-center mb-3">
