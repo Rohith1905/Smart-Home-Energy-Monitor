@@ -1,0 +1,106 @@
+.home-container {
+    padding: 2rem 0;
+  }
+  
+  .hero-section {
+    padding: 4rem 0;
+    background: linear-gradient(135deg, #2c3e50, #3498db);
+    color: white;
+    border-radius: 15px;
+  }
+  
+  .hero-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+  }
+
+  .custom-tooltip {
+    font-size: 0.9rem;
+    background: rgba(0, 0, 0, 1);
+    padding: 8px 12px;
+    border-radius: 8px;
+  }
+  
+  
+  .pulse-icon {
+    animation: pulse 2s infinite;
+  }
+  
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+  
+  .energy-card {
+    transition: transform 0.3s ease;
+    border: none;
+    border-radius: 15px;
+    overflow: hidden;
+  }
+  
+  .energy-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .card-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .features-section {
+    padding: 3rem 0;
+  }
+  
+  .feature-card {
+    padding: 2rem;
+    text-align: center;
+    border-radius: 15px;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+  }
+  
+  .feature-card:hover {
+    background: white;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  }
+  
+  .cta-section {
+    padding: 4rem 0;
+    background: #f8f9fa;
+    border-radius: 15px;
+  }
+  
+  .main-footer {
+    padding: 2rem 0;
+    background: #2c3e50;
+    color: white;
+    border-radius: 15px;
+  }
+  
+  .footer-links {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .footer-links a {
+    color: #95a5a6;
+    text-decoration: none;
+  }
+  
+  .social-links a {
+    color: white;
+    font-size: 1.5rem;
+    margin-right: 1rem;
+  }
+
+  .ai-assistant-section {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .ai-assistant-section h4 {
+    margin-bottom: 0;
+  }
